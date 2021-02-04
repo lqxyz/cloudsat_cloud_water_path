@@ -27,8 +27,9 @@ if __name__ == '__main__':
 
     for year in range(2012, 2015):
         print(year)
+
         # Read year data
-        ds = xr.open_dataset(P(dt_dir,'visit_num_'+str(year)+'.nc'), decode_times=False)
+        ds = xr.open_dataset(P(dt_dir, 'visit_num_'+str(year)+'.nc'), decode_times=False)
         visit_num = ds.visit_num #yearly_sum(ds.visit_num)
 
         nlats = len(ds.lat)
@@ -38,7 +39,7 @@ if __name__ == '__main__':
         iwp = np.zeros((1, nlats, nlons))
         cwp = np.zeros((1, nlats, nlons))
 
-        ds = xr.open_dataset(P(dt_dir,'lwp_sum_'+str(year)+'.nc'), decode_times=False)
+        ds = xr.open_dataset(P(dt_dir, 'lwp_sum_'+str(year)+'.nc'), decode_times=False)
         lwp_sum = ds.lwp_sum #yearly_sum(ds.lwp_sum)
         lwp[0,:,:] = np.where(visit_num > 0, lwp_sum / visit_num, np.nan) 
 
@@ -47,7 +48,7 @@ if __name__ == '__main__':
         print(lwp_gm)
         #lwp_gm = xr.DataArray(np.array([lwp_gm]), dims=('year'), coords={'year':np.array(year)})
 
-        ds = xr.open_dataset(P(dt_dir,'iwp_sum_'+str(year)+'.nc'), decode_times=False)
+        ds = xr.open_dataset(P(dt_dir, 'iwp_sum_'+str(year)+'.nc'), decode_times=False)
         iwp_sum = ds.iwp_sum #yearly_sum(ds.iwp_sum)
         iwp[0,:,:] = np.where(visit_num > 0, iwp_sum / visit_num, np.nan) 
         iwp = xr.DataArray(iwp, coords=(np.array([year]), ds.lat, ds.lon), dims=('year', 'lat', 'lon'))
