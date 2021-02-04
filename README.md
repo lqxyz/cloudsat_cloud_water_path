@@ -1,4 +1,4 @@
-## Process the CloudSat HDF files to get cloud water path netCDF dataset
+## Process the CloudSat HDF files to get cloud water path netCDF dataset (T42)
 
 CloudSat dataset is available at http://www.cloudsat.cira.colostate.edu/
 
@@ -9,8 +9,9 @@ do
     wget -r --user=username --password=password ftp://ftp.cloudsat.cira.colostate.edu//2B-CWC-RO.P1_R05/$year
 done
 ```
+The dataset should be located at `ftp.cloudsat.cira.colostate.edu/2B-CWC-RO.P1_R05/`, sorted by year.
 
-### Run the scipts
+### Run the scripts
 
 For year 2012 to 2014, we only generate annual statiscal temperary datasets; while for year 2015 to 2016, we generate both monthly and yearly datasets.
 
