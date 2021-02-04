@@ -10,3 +10,19 @@ do
 done
 ```
 
+### Run the scipts
+
+For year 2012 to 2014, we only generate annual statiscal temperary datasets; while for year 2015 to 2016, we generate both monthly and yearly datasets.
+
+For year 2012 to 2014, run:
+```bash
+./run_year_2012_2014.sh
+python write_lwp_iwp_mon_year_2012_2014.py
+```
+
+For year 2015 to 2016, run:
+```bash
+./run_mon_2015_2016.sh
+python write_lwp_iwp_mon_year_2015_2016.py
+```
+
