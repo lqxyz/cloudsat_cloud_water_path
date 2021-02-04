@@ -1,4 +1,4 @@
-## Processing the CloudSat cloud water path dataset
+## Process the CloudSat HDF files to get cloud water path netCDF dataset
 
 CloudSat dataset is available at http://www.cloudsat.cira.colostate.edu/
 
