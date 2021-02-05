@@ -12,14 +12,14 @@ done
 The dataset should be located at `ftp.cloudsat.cira.colostate.edu/2B-CWC-RO.P1_R05/`, sorted by year.
 
 ### Required packages
-Package [`pyhdf`](https://github.com/fhs/pyhdf) needs to be installed to read the HDF files, for example, you can install by `conda`:
+Package [`pyhdf`](https://github.com/fhs/pyhdf) needs to be installed to read the HDF files. For example, you can install it by [`conda`](https://docs.conda.io/en/latest/):
 ```bash
 conda install -c conda-forge pyhdf
 ```
 
 ### Run the scripts
 
-For year 2012 to 2014, we only generate annual statiscal temperary datasets; while for year 2015 to 2016, we generate both monthly and yearly datasets.
+For year 2012 to 2014, we only generate yearly (temperary) datasets; while for year 2015 to 2016, we generate both monthly and yearly datasets.
 
 For year 2012 to 2014, run:
 ```bash
