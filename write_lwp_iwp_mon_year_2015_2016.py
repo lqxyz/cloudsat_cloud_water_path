@@ -103,4 +103,3 @@ if __name__ == '__main__':
         ds_out = xr.Dataset(var_dict, coords={'month':mons, 'lat':ds.lat, 'lon':ds.lon})
         ds_out.to_netcdf(os.path.join(saved_dir, 'cld_water_path_data_t42_monthly_'+str(year)+'.nc'), format='NETCDF4_CLASSIC', mode='w')
         '''
-

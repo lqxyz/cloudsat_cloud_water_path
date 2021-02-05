@@ -4,8 +4,6 @@ import sys
 import numpy as np
 from functions import global_mean
 
-    
-
 if __name__ == '__main__':
     P = os.path.join
     dt_dir = './output_data/lwp_iwp_year_dt_flip_lon_t42_2012_2014'

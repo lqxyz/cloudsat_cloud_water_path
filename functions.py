@@ -20,7 +20,7 @@ def get_lat_lon_lwp_iwp_from_hdf(fn):
     RO_liq_water_path = vs.attach('RO_liq_water_path')
     RO_ice_water_path = vs.attach('RO_ice_water_path')
 
-    lats = np.squeeze(Latitude[:]) #np.squeeze(Latitude[:])
+    lats = np.squeeze(Latitude[:])
     lons = np.squeeze(Longitude[:])
     lons = np.where(lons<0, lons+360, lons)
     # profile_time= np.squeeze(Profile_time[:])
