@@ -2,20 +2,8 @@ import xarray as xr
 import os
 import sys
 import numpy as np
+from functions import global_mean
 
-
-def gm(dt):
-    dt_ma = np.ma.array(dt, mask=np.isnan(dt))
-    lats = dt.lat
-    coslat = np.cos(np.deg2rad(lats))
-    dt_gm = np.ma.average(np.ma.average(dt_ma, axis=1), axis=0, weights=coslat)
-    return dt_gm
-
-def yearly_sum(dt):
-    dt_ma = np.ma.array(dt, mask=np.isnan(dt))
-    dt_ym = np.ma.sum(dt_ma, axis=0)
-    dt_ym = xr.DataArray(dt_ym, dims=('lat', 'lon'), coords=(dt.lat, dt.lon))
-    return dt_ym
     
 
 if __name__ == '__main__':
@@ -30,7 +18,7 @@ if __name__ == '__main__':
 
         # Read year data
         ds = xr.open_dataset(P(dt_dir, 'visit_num_'+str(year)+'.nc'), decode_times=False)
-        visit_num = ds.visit_num #yearly_sum(ds.visit_num)
+        visit_num = ds.visit_num
 
         nlats = len(ds.lat)
         nlons = len(ds.lon)
@@ -40,19 +28,17 @@ if __name__ == '__main__':
         cwp = np.zeros((1, nlats, nlons))
 
         ds = xr.open_dataset(P(dt_dir, 'lwp_sum_'+str(year)+'.nc'), decode_times=False)
-        lwp_sum = ds.lwp_sum #yearly_sum(ds.lwp_sum)
+        lwp_sum = ds.lwp_sum
         lwp[0,:,:] = np.where(visit_num > 0, lwp_sum / visit_num, np.nan) 
-
         lwp = xr.DataArray(lwp, dims=('year','lat', 'lon'), coords=(np.array([year]), ds.lat, ds.lon))
-        lwp_gm = gm(lwp[0,:,:])
-        print(lwp_gm)
+        #lwp_gm = global_mean(lwp[0,:,:])
         #lwp_gm = xr.DataArray(np.array([lwp_gm]), dims=('year'), coords={'year':np.array(year)})
 
         ds = xr.open_dataset(P(dt_dir, 'iwp_sum_'+str(year)+'.nc'), decode_times=False)
-        iwp_sum = ds.iwp_sum #yearly_sum(ds.iwp_sum)
+        iwp_sum = ds.iwp_sum
         iwp[0,:,:] = np.where(visit_num > 0, iwp_sum / visit_num, np.nan) 
         iwp = xr.DataArray(iwp, coords=(np.array([year]), ds.lat, ds.lon), dims=('year', 'lat', 'lon'))
-        #iwp_gm = gm(iwp[0,:,:])
+        #iwp_gm = global_mean(iwp[0,:,:])
         #iwp_gm = xr.DataArray(np.array([iwp_gm]), dims=('year'), coords={'year':np.array(year)})
        
         cwp[0,:,:] = lwp[0,:,:] + iwp[0,:,:]
@@ -89,15 +75,15 @@ if __name__ == '__main__':
 
             lwp = np.where(visit_num > 0, lwp_sum / visit_num, np.nan) 
             lwp = xr.DataArray(lwp, coords=(ds.lat, ds.lon), dims=('lat', 'lon'))
-            lwp_gm = gm(lwp)
-            print('lwp gm=', lwp_gm)
+            lwp_gm = global_mean(lwp)
+            print('lwp global_mean=', lwp_gm)
 
             ds = xr.open_dataset(P(dt_dir,'iwp_sum_'+str(year)+mon_str+'.nc'), decode_times=False)
             iwp_sum = ds.iwp_sum
             iwp = np.where(visit_num > 0, iwp_sum / visit_num, np.nan) 
             iwp = xr.DataArray(iwp, coords=(ds.lat, ds.lon), dims=('lat', 'lon'))
-            iwp_gm = gm(iwp)
-            print('iwp gm=', iwp_gm)
+            iwp_gm = global_mean(iwp)
+            print('iwp global_mean=', iwp_gm)
 
             lwp_mon[mm,:,:] = lwp 
             iwp_mon[mm,:,:] = iwp 

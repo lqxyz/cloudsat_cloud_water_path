@@ -3,56 +3,13 @@ import xarray as xr
 import os
 import numpy as np
 import sys
-
 import glob
 import timeit
 import warnings
 warnings.simplefilter(action='ignore')
 from calendar import monthrange
 from datetime import date
-
-# For the hdf file
-from pyhdf.HDF import *
-from pyhdf.VS import *
-from pyhdf.SD import *
-
-
-def get_lat_lon_lwp_iwp(fn):
-    f = HDF(fn)
-    vs = f.vstart()
-    #print(vs.vdatainfo())
-
-    Latitude = vs.attach('Latitude')
-    Longitude = vs.attach('Longitude')
-    #Profile_time = vs.attach('Profile_time')
-    #UTC_start = vs.attach('UTC_start')
-    #DEM_elevation = vs.attach('DEM_elevation')
-
-    RO_liq_water_path = vs.attach('RO_liq_water_path')
-    RO_ice_water_path = vs.attach('RO_ice_water_path')
-
-    lats = np.squeeze(Latitude[:]) #np.squeeze(Latitude[:])
-    lons = np.squeeze(Longitude[:])
-    lons = np.where(lons<0, lons+360, lons)
-    # profile_time= np.squeeze(Profile_time[:])
-    # utc_start= np.squeeze(UTC_start[:])
-    # dem= np.squeeze(DEM_elevation[:])
-
-    lwp = np.squeeze(RO_liq_water_path[:])
-    iwp = np.squeeze(RO_ice_water_path[:])
-
-    lwp[lwp<-10] = np.nan
-    iwp[iwp<-10] = np.nan
-
-    Latitude.detach()
-    Longitude.detach()
-    RO_liq_water_path.detach()
-    RO_ice_water_path.detach()
-    vs.end()
-    f.close()
-
-    return lats, lons, lwp, iwp
-
+from functions import get_lat_lon_lwp_iwp_from_hdf
 
 def gridding_data():
     for i in range(nlats):
@@ -61,16 +18,9 @@ def gridding_data():
             nlat = bd_lats[i+1]
             llon = bd_lons[j]
             rlon = bd_lons[j+1]
-            #if llon > 180:
-            #    llon = llon - 360.0
-            #if rlon > 180:
-            #    rlon = rlon - 360.0
-            #print(slat, nlat, llon, rlon)
 
             ind = (lats>=slat) & (lats<=nlat) & (lons>=llon) & (lons<=rlon)
             if np.sum(ind)>0:
-                #if not np.isnan(np.nansum(lwp[ind])):
-                #grid_dt[kk,i,j] = np.nanmean(lwp[ind]) #np.sum(lwp[ind]) / np.sum(ind)
                 lwp_grid_dt[i,j] = np.nansum([ lwp_grid_dt[i,j], np.nanmean(lwp[ind]) ])
                 iwp_grid_dt[i,j] = np.nansum([ iwp_grid_dt[i,j], np.nanmean(iwp[ind]) ])
                 visit_dt[i,j] = visit_dt[i,j] + 1
@@ -78,9 +28,8 @@ def gridding_data():
                 lwp_grid_dt[i,j] = np.nansum([lwp_grid_dt[i,j], np.nan])
                 iwp_grid_dt[i,j] = np.nansum([iwp_grid_dt[i,j], np.nan])
 
-
 if __name__ == '__main__':
-    
+    P = os.path.join
     saved_dir = './output_data/lwp_iwp_year_dt_flip_lon_t42_2012_2014'
     if not os.path.exists(saved_dir):
         os.makedirs(saved_dir)
@@ -121,14 +70,14 @@ if __name__ == '__main__':
 
         start_d = timeit.default_timer()
 
-        fns = sorted(glob.glob(os.path.join(basedir, str(year), day_str, '*.hdf')))
+        fns = sorted(glob.glob(P(basedir, str(year), day_str, '*.hdf')))
         if fns != []:
             for kk, fn in enumerate(fns):
 
                 start1 = timeit.default_timer()
                 print(os.path.basename(fn))
 
-                lats, lons, lwp, iwp = get_lat_lon_lwp_iwp(fn)
+                lats, lons, lwp, iwp = get_lat_lon_lwp_iwp_from_hdf(fn)
                 print('mean lwp/iwp:', np.nanmean(lwp), np.nanmean(iwp))
 
                 gridding_data()
@@ -154,13 +103,12 @@ if __name__ == '__main__':
     coords = {'lat': lats1, 'lon': lons1}
 
     visit_ds = xr.Dataset({'visit_num':visit_dt}, coords=coords)
-    visit_ds.to_netcdf(os.path.join(saved_dir, 'visit_num_'+str(year)+'.nc'), format='NETCDF4_CLASSIC', mode='w')
+    visit_ds.to_netcdf(P(saved_dir, 'visit_num_'+str(year)+'.nc'), format='NETCDF4_CLASSIC', mode='w')
 
     lwp_ds = xr.Dataset({'lwp_sum':lwp_grid_dt}, coords=coords)
-    lwp_ds.to_netcdf(os.path.join(saved_dir, 'lwp_sum_'+str(year)+'.nc'), format='NETCDF4_CLASSIC', mode='w')
+    lwp_ds.to_netcdf(P(saved_dir, 'lwp_sum_'+str(year)+'.nc'), format='NETCDF4_CLASSIC', mode='w')
 
     iwp_ds = xr.Dataset({'iwp_sum':iwp_grid_dt}, coords=coords)
-    iwp_ds.to_netcdf(os.path.join(saved_dir, 'iwp_sum_'+str(year)+'.nc'), format='NETCDF4_CLASSIC', mode='w')
+    iwp_ds.to_netcdf(P(saved_dir, 'iwp_sum_'+str(year)+'.nc'), format='NETCDF4_CLASSIC', mode='w')
 
     print('dataset saved...')
-
