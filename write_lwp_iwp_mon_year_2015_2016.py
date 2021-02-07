@@ -47,7 +47,7 @@ if __name__ == '__main__':
 
         ds_out = xr.Dataset({'lwp':lwp, 'iwp':iwp, 'cwp':cwp}, coords={'year':np.array(year), 'lat':ds.lat, 'lon':ds.lon})
 
-        ds_out.to_netcdf(os.path.join(saved_dir, 'cld_water_path_data_t42_'+str(year)+'.nc'), format='NETCDF4_CLASSIC', mode='w')
+        ds_out.to_netcdf(P(saved_dir, 'cld_water_path_data_t42_'+str(year)+'.nc'), format='NETCDF4_CLASSIC', mode='w')
        
         '''
         lwp_mon = np.zeros((12, nlats, nlons))
@@ -101,5 +101,5 @@ if __name__ == '__main__':
         var_dict = {'lwp':lwp_mon, 'iwp':iwp_mon, 'cwp':cwp_mon,'lwp_gm':lwp_gm_mon, 'iwp_gm':iwp_gm_mon, 'cwp_gm':cwp_gm_mon}
 
         ds_out = xr.Dataset(var_dict, coords={'month':mons, 'lat':ds.lat, 'lon':ds.lon})
-        ds_out.to_netcdf(os.path.join(saved_dir, 'cld_water_path_data_t42_monthly_'+str(year)+'.nc'), format='NETCDF4_CLASSIC', mode='w')
+        ds_out.to_netcdf(P(saved_dir, 'cld_water_path_data_t42_monthly_'+str(year)+'.nc'), format='NETCDF4_CLASSIC', mode='w')
         '''
